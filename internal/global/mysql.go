@@ -2,6 +2,7 @@ package global
 
 import (
 	"github.com/galaxy-toolkit/server/database/mysql"
+	"gorm.io/gen"
 	"gorm.io/gorm"
 )
 
@@ -15,4 +16,12 @@ func InitMySQL() {
 		panic(err)
 	}
 	MySQL = db
+}
+
+func InitMySQLGenerator(output string) (*gen.Generator, error) {
+	generator, err := mysql.NewModelGenerator(Config.MySQL, output)
+	if err != nil {
+		return nil, err
+	}
+	return generator, nil
 }
