@@ -18,8 +18,8 @@ func InitMySQL() {
 	MySQL = db
 }
 
-func InitMySQLGenerator(output string) (*gen.Generator, error) {
-	generator, err := mysql.NewModelGenerator(Config.MySQL, output)
+func InitMySQLGenerator(queryPath, queryFilename, modelPath string) (*gen.Generator, error) {
+	generator, err := mysql.NewModelGenerator(Config.MySQL, queryPath, queryFilename, modelPath)
 	if err != nil {
 		return nil, err
 	}

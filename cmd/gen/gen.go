@@ -9,7 +9,11 @@ func main() {
 	global.InitConfig() // 配置
 	global.InitLogger() // 日志
 
-	generator, err := global.InitMySQLGenerator("./domain/model")
+	genIP()
+}
+
+func genIP() {
+	generator, err := global.InitMySQLGenerator("./domain/query/ip", "", "./domain/model/ip")
 	if err != nil {
 		panic(err)
 	}
