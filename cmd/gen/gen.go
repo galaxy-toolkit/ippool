@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/galaxy-toolkit/ippool/internal/global"
+	"github.com/galaxy-toolkit/server/database/postgres"
 	"gorm.io/gen"
 )
 
@@ -13,7 +14,7 @@ func main() {
 }
 
 func genIP() {
-	generator, err := global.InitMySQLGenerator("./domain/query/ip", "", "./domain/model/ip")
+	generator, err := global.InitPostgresGenerator(postgres.GeneratorConfig{ModelPath: "domain/model/ip"})
 	if err != nil {
 		panic(err)
 	}

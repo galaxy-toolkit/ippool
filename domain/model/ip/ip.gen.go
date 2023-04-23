@@ -8,11 +8,11 @@ const TableNameIP = "ip"
 
 // IP mapped from table <ip>
 type IP struct {
-	ID       int64  `gorm:"column:id;type:bigint;primaryKey;autoIncrement:true;comment:id" json:"id"`
-	Address  string `gorm:"column:address;type:varchar(255);not null;comment:IP 地址" json:"address"`
-	Status   Status `gorm:"column:status;type:varchar(255);not null;comment:IP 状态" json:"status"`
-	Latgency int32  `gorm:"column:latgency;type:int;not null;comment:延迟耗时" json:"latgency"`
-	Source   string `gorm:"column:source;type:varchar(255);not null;comment:IP 爬取来源" json:"source"`
+	ID      int64  `gorm:"column:id;type:bigint;primaryKey;autoIncrement:true;comment:ID" json:"id"`
+	Address string `gorm:"column:address;type:character varying;not null;comment:IP 地址" json:"address"`
+	Status  Status `gorm:"column:status;type:character varying;not null;comment:状态" json:"status"`
+	Latency int64  `gorm:"column:latency;type:bigint;not null;comment:延迟" json:"latency"`
+	Source  string `gorm:"column:source;type:character varying;not null;comment:来源" json:"source"`
 }
 
 // TableName IP's table name
