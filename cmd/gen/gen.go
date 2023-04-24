@@ -7,18 +7,22 @@ import (
 )
 
 func main() {
-	global.InitConfig() // 配置
-	global.InitLogger() // 日志
+	global.InitConfig("config.yaml") // 配置
+	global.InitLogger()              // 日志
 
 	genIP()
 }
 
 func genIP() {
-	generator, err := global.InitPostgresGenerator(postgres.GeneratorConfig{ModelPath: "domain/model/ip"})
+	generator, err := global.InitPostgresGenerator(postgres.GeneratorConfig{
+		QueryPath: "domain/ip",
+		ModelPath: "domain/model",
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	generator.GenerateModelAs("ip", "IP", gen.FieldType("status", "Status"))
+	generator.ApplyBasic(generator.GenerateModelAs("ip", "IP", gen.FieldType("status", "IPStatus")))
+	generator.GenerateModelAs("source", "Source")
 	generator.Execute()
 }

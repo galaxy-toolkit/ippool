@@ -8,8 +8,10 @@ require (
 	github.com/gofiber/swagger v0.1.11
 	github.com/swaggo/swag v1.16.1
 	golang.org/x/exp v0.0.0-20230419192730-864b3d6c5c2c
+	gorm.io/driver/sqlite v1.4.3
 	gorm.io/gen v0.3.22
 	gorm.io/gorm v1.25.0
+	gorm.io/plugin/dbresolver v1.3.0
 )
 
 require (
@@ -43,6 +45,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
+	github.com/mattn/go-sqlite3 v1.14.15 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -76,5 +79,4 @@ require (
 	gorm.io/driver/mysql v1.5.0 // indirect
 	gorm.io/driver/postgres v1.4.5 // indirect
 	gorm.io/hints v1.1.0 // indirect
-	gorm.io/plugin/dbresolver v1.3.0 // indirect
 )

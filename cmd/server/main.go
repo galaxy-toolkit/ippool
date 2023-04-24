@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	global.InitConfig()   // 配置
-	global.InitLogger()   // 日志
-	global.InitPostgres() // Postgres
+	global.InitConfig("config.yaml") // 配置
+	global.InitLogger()              // 日志
+	global.InitPostgres()            // Postgres
 
 	fmt.Println(global.Config)
 

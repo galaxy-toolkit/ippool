@@ -6,8 +6,8 @@ import "github.com/galaxy-toolkit/server/config"
 var Config config.Config
 
 // InitConfig 初始化读取配置
-func InitConfig() {
-	if err := config.LoadAndWatch("config.yaml", &Config); err != nil {
+func InitConfig(path string) {
+	if err := config.LoadAndWatch(path, &Config); err != nil {
 		panic(err)
 	}
 }
