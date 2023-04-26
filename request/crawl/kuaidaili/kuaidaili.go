@@ -33,16 +33,17 @@ func (c *Crawler) Crawl() ([]*model.IP, error) {
 		return nil, err
 	}
 
-	if err := resp.BuildDom(); err != nil {
+	dom, err := resp.Dom()
+	if err != nil {
 		return nil, err
 	}
 
 	ips := make([]*model.IP, 0)
-	resp.Dom.Find("tbody tr").Each(func(i int, s *goquery.Selection) {
+	dom.Find("tbody tr").Each(func(i int, s *goquery.Selection) {
 		ip := &model.IP{
 			Address:   s.Find(`td[data-title="IP"]`).Text(),
 			Port:      s.Find(`td[data-title="PORT"]`).Text(),
-			Protocol:  s.Find(`td[data-title="类型"]`).Text(),
+			Protocol:  model.IPProtocol(s.Find(`td[data-title="类型"]`).Text()),
 			Location:  s.Find(`td[data-title="位置"]`).Text(),
 			Source:    source,
 			CrawlTime: time.Now().UnixMilli(),
