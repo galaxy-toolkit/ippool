@@ -22,7 +22,10 @@ func genIP() {
 		panic(err)
 	}
 
-	generator.ApplyBasic(generator.GenerateModelAs("ip", "IP", gen.FieldType("status", "IPStatus")))
+	generator.GenerateModelAs("ip", "IP",
+		gen.FieldType("status", "IPStatus"),
+		gen.FieldType("protocol", "IPProtocol"),
+	)
 	generator.GenerateModelAs("source", "Source")
 	generator.Execute()
 }
