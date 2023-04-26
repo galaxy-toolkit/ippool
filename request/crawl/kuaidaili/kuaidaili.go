@@ -6,13 +6,19 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-
 	"github.com/galaxy-toolkit/ippool/domain/model"
+	"github.com/galaxy-toolkit/ippool/internal/global"
 	"github.com/wnanbei/fastreq"
+	"golang.org/x/exp/slog"
 )
 
 const (
-	pageURL = "https://www.kuaidaili.com/free/inha/%s"
+	DailyCrawlPage = 3    // 每日定时爬取页数
+	MaxCrawlPage   = 1000 // 最大爬取数量
+)
+
+const (
+	pageURL = "https://www.kuaidaili.com/free/inha/%d"
 	source  = "www.kuaidaili.com"
 )
 
@@ -27,7 +33,38 @@ func New(ctx context.Context) *Crawler {
 }
 
 func (c *Crawler) Crawl() ([]*model.IP, error) {
-	uri := fmt.Sprintf(pageURL, "1")
+	ips := make([]*model.IP, 0, DailyCrawlPage*10)
+
+	for i := 1; i <= DailyCrawlPage; i++ {
+		ip, err := c.crawlByPage(i)
+		if err != nil {
+			global.Logger.ErrorCtx(c.ctx, "kuaidaili Crawl crawlByPage err", err, slog.Any("page", i))
+			return nil, err
+		}
+		ips = append(ips, ip...)
+	}
+
+	return ips, nil
+}
+
+func (c *Crawler) CrawlAll() ([]*model.IP, error) {
+	ips := make([]*model.IP, 0, DailyCrawlPage*10)
+
+	for i := 1; i <= MaxCrawlPage; i++ {
+		ip, err := c.crawlByPage(i)
+		if err != nil {
+			global.Logger.ErrorCtx(c.ctx, "kuaidaili CrawlAll crawlByPage err", err, slog.Any("page", i))
+			return nil, err
+		}
+		ips = append(ips, ip...)
+	}
+
+	return ips, nil
+}
+
+// crawlByPage 分页爬取
+func (c *Crawler) crawlByPage(page int) ([]*model.IP, error) {
+	uri := fmt.Sprintf(pageURL, page)
 	resp, err := fastreq.Get(uri)
 	if err != nil {
 		return nil, err
@@ -51,8 +88,5 @@ func (c *Crawler) Crawl() ([]*model.IP, error) {
 		ips = append(ips, ip)
 	})
 
-	for i := range ips {
-		fmt.Println(*ips[i])
-	}
 	return ips, nil
 }

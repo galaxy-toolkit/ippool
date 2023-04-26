@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
-
+	"context"
+	"github.com/galaxy-toolkit/ippool/app/pool"
 	"github.com/galaxy-toolkit/ippool/internal/global"
 )
 
@@ -11,7 +11,7 @@ func main() {
 	global.InitLogger()              // 日志
 	global.InitPostgres()            // Postgres
 
-	fmt.Println(global.Config)
+	pool.Run(context.TODO())
 
 	global.Logger.Info("hello world")
 }
