@@ -1,9 +1,21 @@
 package crawl
 
-import "github.com/galaxy-toolkit/ippool/domain/model"
+import (
+	"context"
+
+	"github.com/galaxy-toolkit/ippool/domain/model"
+	"github.com/galaxy-toolkit/ippool/request/crawl/kuaidaili"
+)
 
 // Crawler interface
 type Crawler interface {
 	Crawl() ([]*model.IP, error)
 	CrawlAll() ([]*model.IP, error)
+}
+
+// Crawlers 获取项目内 IP 网站爬虫
+func Crawlers(ctx context.Context) []Crawler {
+	return []Crawler{
+		kuaidaili.New(ctx),
+	}
 }
