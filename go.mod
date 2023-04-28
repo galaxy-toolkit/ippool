@@ -7,6 +7,7 @@ require (
 	github.com/galaxy-toolkit/server v0.0.0-20230423064250-27c2f82a9d66
 	github.com/gofiber/fiber/v2 v2.44.0
 	github.com/gofiber/swagger v0.1.11
+	github.com/sourcegraph/conc v0.3.0
 	github.com/swaggo/swag v1.16.1
 	github.com/wnanbei/fastreq v0.3.2
 	golang.org/x/exp v0.0.0-20230419192730-864b3d6c5c2c
@@ -54,7 +55,6 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
-	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
@@ -69,6 +69,8 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.45.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/mod v0.9.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
