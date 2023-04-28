@@ -13,5 +13,5 @@ func main() {
 
 	pool.Run(context.TODO())
 
-	global.Logger.Info("hello world")
+	global.Logger.Info("end")
 }

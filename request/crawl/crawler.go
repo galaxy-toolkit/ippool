@@ -9,8 +9,8 @@ import (
 
 // Crawler interface
 type Crawler interface {
-	Crawl() ([]*model.IP, error)
-	CrawlAll() ([]*model.IP, error)
+	Crawl(chan<- *model.IP) error
+	CrawlAll(chan<- *model.IP) error
 }
 
 // Crawlers 获取项目内 IP 网站爬虫

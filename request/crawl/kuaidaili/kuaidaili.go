@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	DailyCrawlPage = 3    // 每日定时爬取页数
-	MaxCrawlPage   = 1000 // 最大爬取数量
+	DailyCrawlPage    = 3                // 每日定时爬取页数
+	MaxCrawlPage      = 1000             // 最大爬取数量
+	CrawlIntervalTime = time.Second * 10 // 每次爬取间隔时间
 )
 
 const (
@@ -32,34 +33,42 @@ func New(ctx context.Context) *Crawler {
 	}
 }
 
-func (c *Crawler) Crawl() ([]*model.IP, error) {
-	ips := make([]*model.IP, 0, DailyCrawlPage*10)
-
+func (c *Crawler) Crawl(resultChan chan<- *model.IP) error {
 	for i := 1; i <= DailyCrawlPage; i++ {
-		ip, err := c.crawlByPage(i)
+		ips, err := c.crawlByPage(i)
 		if err != nil {
-			global.Logger.ErrorCtx(c.ctx, "kuaidaili Crawl crawlByPage err", err, slog.Any("page", i))
-			return nil, err
+			global.Logger.ErrorCtx(c.ctx, "kuaidaili Crawl crawlByPage err", "err", err, slog.Any("page", i))
+			return err
 		}
-		ips = append(ips, ip...)
+
+		for j := range ips {
+			resultChan <- ips[j]
+			global.Logger.InfoCtx(c.ctx, "kuaidaili Crawl successes", slog.Any("ip", ips[j]))
+		}
+
+		time.Sleep(CrawlIntervalTime)
 	}
 
-	return ips, nil
+	return nil
 }
 
-func (c *Crawler) CrawlAll() ([]*model.IP, error) {
-	ips := make([]*model.IP, 0, DailyCrawlPage*10)
-
+func (c *Crawler) CrawlAll(resultChan chan<- *model.IP) error {
 	for i := 1; i <= MaxCrawlPage; i++ {
-		ip, err := c.crawlByPage(i)
+		ips, err := c.crawlByPage(i)
 		if err != nil {
-			global.Logger.ErrorCtx(c.ctx, "kuaidaili CrawlAll crawlByPage err", err, slog.Any("page", i))
-			return nil, err
+			global.Logger.ErrorCtx(c.ctx, "kuaidaili CrawlAll crawlByPage err", "err", err, slog.Any("page", i))
+			return err
 		}
-		ips = append(ips, ip...)
+
+		for j := range ips {
+			resultChan <- ips[j]
+			global.Logger.InfoCtx(c.ctx, "kuaidaili CrawlAll successes", slog.Any("ip", ips[j]))
+		}
+
+		time.Sleep(CrawlIntervalTime)
 	}
 
-	return ips, nil
+	return nil
 }
 
 // crawlByPage 分页爬取
@@ -88,5 +97,6 @@ func (c *Crawler) crawlByPage(page int) ([]*model.IP, error) {
 		ips = append(ips, ip)
 	})
 
+	global.Logger.InfoCtx(c.ctx, "kuaidaili crawlByPage successes", slog.Any("url", uri))
 	return ips, nil
 }
