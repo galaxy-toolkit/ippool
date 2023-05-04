@@ -14,7 +14,7 @@ import (
 
 const (
 	DailyCrawlPage    = 3                // 每日定时爬取页数
-	MaxCrawlPage      = 1000             // 最大爬取数量
+	MaxCrawlPage      = 500              // 最大爬取数量
 	CrawlIntervalTime = time.Second * 10 // 每次爬取间隔时间
 )
 
@@ -53,8 +53,8 @@ func (c *Crawler) Crawl(resultChan chan<- *model.IP) error {
 }
 
 func (c *Crawler) CrawlAll(resultChan chan<- *model.IP) error {
-	for i := 1; i <= MaxCrawlPage; i++ {
-		ips, err := c.crawlByPage(i)
+	for i := 60; i <= MaxCrawlPage; i++ {
+		ips, err := c.crawlByPage(i * 10)
 		if err != nil {
 			global.Logger.ErrorCtx(c.ctx, "kuaidaili CrawlAll crawlByPage err", "err", err, slog.Any("page", i))
 			return err
@@ -87,12 +87,13 @@ func (c *Crawler) crawlByPage(page int) ([]*model.IP, error) {
 	ips := make([]*model.IP, 0)
 	dom.Find("tbody tr").Each(func(i int, s *goquery.Selection) {
 		ip := &model.IP{
-			Address:   s.Find(`td[data-title="IP"]`).Text(),
-			Port:      s.Find(`td[data-title="PORT"]`).Text(),
-			Protocol:  model.IPProtocol(s.Find(`td[data-title="类型"]`).Text()),
-			Location:  s.Find(`td[data-title="位置"]`).Text(),
-			Source:    source,
-			CrawlTime: time.Now().UnixMilli(),
+			Address:  s.Find(`td[data-title="IP"]`).Text(),
+			Port:     s.Find(`td[data-title="PORT"]`).Text(),
+			Protocol: model.IPProtocol(s.Find(`td[data-title="类型"]`).Text()),
+			Location: s.Find(`td[data-title="位置"]`).Text(),
+			Source:   source,
+			Status:   model.NotVerify,
+			CreateAt: time.Now(),
 		}
 		ips = append(ips, ip)
 	})

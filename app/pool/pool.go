@@ -39,7 +39,7 @@ func RunCrawlers(ctx context.Context, resultsChan chan<- *model.IP) {
 	for i := range crawlers {
 		i := i
 		p.Go(func() {
-			err := crawlers[i].Crawl(resultsChan)
+			err := crawlers[i].CrawlAll(resultsChan)
 			if err != nil {
 				global.Logger.ErrorCtx(ctx, "kuaidaili CrawlAll crawlByPage err", "err", err, slog.Any("page", i))
 				return
