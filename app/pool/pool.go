@@ -2,6 +2,7 @@ package pool
 
 import (
 	"context"
+
 	"github.com/galaxy-toolkit/ippool/domain/model"
 	"github.com/galaxy-toolkit/ippool/domain/pool"
 	"github.com/galaxy-toolkit/ippool/internal/global"
@@ -9,7 +10,6 @@ import (
 	"github.com/jackc/pgconn"
 	"github.com/sourcegraph/conc"
 	concPool "github.com/sourcegraph/conc/pool"
-	"golang.org/x/exp/slog"
 )
 
 const (
@@ -17,31 +17,66 @@ const (
 	CrawlersMaxGoroutines = 100
 )
 
-func Run(ctx context.Context) {
+func CrawlAll(ctx context.Context) {
 	resultsChan := make(chan *model.IP, 1000)
 	wg := conc.NewWaitGroup()
 
 	wg.Go(func() {
-		RunCrawlers(ctx, resultsChan)
+		crawlAll(ctx, resultsChan)
 	})
 	wg.Go(func() {
-		CollectResults(ctx, resultsChan)
+		collectResults(ctx, resultsChan)
 	})
 
 	wg.Wait()
 }
 
-// RunCrawlers 执行爬虫
-func RunCrawlers(ctx context.Context, resultsChan chan<- *model.IP) {
+// crawlAll 执行爬虫
+func crawlAll(ctx context.Context, resultsChan chan<- *model.IP) {
 	p := concPool.New().WithMaxGoroutines(CrawlersMaxGoroutines)
 
-	crawlers := crawl.Crawlers(ctx)
+	crawlers := crawl.AllCrawlers(ctx)
 	for i := range crawlers {
 		i := i
 		p.Go(func() {
 			err := crawlers[i].CrawlAll(resultsChan)
 			if err != nil {
-				global.Logger.ErrorCtx(ctx, "kuaidaili CrawlAll crawlByPage err", "err", err, slog.Any("page", i))
+				global.Logger.ErrorCtx(ctx, "kuaidaili CrawlAll crawlByPage err", "err", err)
+				return
+			}
+		})
+	}
+
+	p.Wait()
+	close(resultsChan)
+}
+
+// RunTimedCrawlers 执行定时爬虫
+func RunTimedCrawlers(ctx context.Context) {
+	resultsChan := make(chan *model.IP, 1000)
+	wg := conc.NewWaitGroup()
+
+	wg.Go(func() {
+		runTimedCrawlers(ctx, resultsChan)
+	})
+	wg.Go(func() {
+		collectResults(ctx, resultsChan)
+	})
+
+	wg.Wait()
+}
+
+// runTimedCrawlers 执行定时爬虫
+func runTimedCrawlers(ctx context.Context, resultsChan chan<- *model.IP) {
+	p := concPool.New().WithMaxGoroutines(CrawlersMaxGoroutines)
+
+	crawlers := crawl.TimedCrawlers(ctx)
+	for i := range crawlers {
+		i := i
+		p.Go(func() {
+			err := crawlers[i].TimedCrawl(resultsChan)
+			if err != nil {
+				global.Logger.ErrorCtx(ctx, "kuaidaili TimedCrawl crawlByPage err", "err", err)
 				return
 			}
 		})
@@ -52,7 +87,7 @@ func RunCrawlers(ctx context.Context, resultsChan chan<- *model.IP) {
 }
 
 // CollectResults 收集爬取结果
-func CollectResults(ctx context.Context, resultsChan <-chan *model.IP) {
+func collectResults(ctx context.Context, resultsChan <-chan *model.IP) {
 	for i := range resultsChan {
 		err := pool.Use(ctx).IP.InsertOne(i)
 		if err != nil {

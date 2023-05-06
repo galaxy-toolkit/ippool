@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	DailyCrawlPage    = 3                // 每日定时爬取页数
+	TimedCrawlPage    = 3                // 定时爬取页数
 	MaxCrawlPage      = 500              // 最大爬取数量
 	CrawlIntervalTime = time.Second * 10 // 每次爬取间隔时间
 )
@@ -24,17 +24,24 @@ const (
 )
 
 type Crawler struct {
-	ctx context.Context
+	ctx                    context.Context
+	timedCrawlPage         int
+	timedCrawlIntervalTime time.Duration
+	maxCrawlPage           int
+	crawlIntervalTime      time.Duration
 }
 
 func New(ctx context.Context) *Crawler {
 	return &Crawler{
-		ctx: ctx,
+		ctx:               ctx,
+		timedCrawlPage:    TimedCrawlPage,
+		maxCrawlPage:      MaxCrawlPage,
+		crawlIntervalTime: CrawlIntervalTime,
 	}
 }
 
-func (c *Crawler) Crawl(resultChan chan<- *model.IP) error {
-	for i := 1; i <= DailyCrawlPage; i++ {
+func (c *Crawler) TimedCrawl(resultChan chan<- *model.IP) error {
+	for i := 1; i <= c.timedCrawlPage; i++ {
 		ips, err := c.crawlByPage(i)
 		if err != nil {
 			global.Logger.ErrorCtx(c.ctx, "kuaidaili Crawl crawlByPage err", "err", err, slog.Any("page", i))
@@ -46,14 +53,14 @@ func (c *Crawler) Crawl(resultChan chan<- *model.IP) error {
 			global.Logger.InfoCtx(c.ctx, "kuaidaili Crawl successes", slog.Any("ip", ips[j]))
 		}
 
-		time.Sleep(CrawlIntervalTime)
+		time.Sleep(c.crawlIntervalTime)
 	}
 
 	return nil
 }
 
 func (c *Crawler) CrawlAll(resultChan chan<- *model.IP) error {
-	for i := 60; i <= MaxCrawlPage; i++ {
+	for i := 1; i <= c.maxCrawlPage; i++ {
 		ips, err := c.crawlByPage(i * 10)
 		if err != nil {
 			global.Logger.ErrorCtx(c.ctx, "kuaidaili CrawlAll crawlByPage err", "err", err, slog.Any("page", i))
@@ -65,7 +72,7 @@ func (c *Crawler) CrawlAll(resultChan chan<- *model.IP) error {
 			global.Logger.InfoCtx(c.ctx, "kuaidaili CrawlAll successes", slog.Any("ip", ips[j]))
 		}
 
-		time.Sleep(CrawlIntervalTime)
+		time.Sleep(c.crawlIntervalTime)
 	}
 
 	return nil

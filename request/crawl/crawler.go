@@ -9,13 +9,18 @@ import (
 
 // Crawler interface
 type Crawler interface {
-	Crawl(chan<- *model.IP) error
+	TimedCrawl(chan<- *model.IP) error
 	CrawlAll(chan<- *model.IP) error
 }
 
-// Crawlers 获取项目内 IP 网站爬虫
-func Crawlers(ctx context.Context) []Crawler {
+// AllCrawlers 获取所有项目内 IP 网站爬虫
+func AllCrawlers(ctx context.Context) []Crawler {
 	return []Crawler{
 		kuaidaili.New(ctx),
 	}
+}
+
+// TimedCrawlers 获取项目内需要定时爬取的 IP 网站爬虫
+func TimedCrawlers(ctx context.Context) []Crawler {
+	return []Crawler{}
 }
