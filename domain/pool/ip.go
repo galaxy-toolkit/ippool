@@ -15,6 +15,7 @@ type IPDao interface {
 	InsertMany(ips []*model.IP) error
 	UpdateByID(id int64, values map[string]any) (int64, error)
 	DeleteManyByIDs(ids []int64) (int64, error)
+	Find(page, pageSize int) ([]*model.IP, int64, error)
 
 	clone(db *gorm.DB) *ipDao
 }
@@ -76,6 +77,20 @@ func (d *ipDao) UpdateByID(id int64, values map[string]any) (int64, error) {
 func (d *ipDao) DeleteManyByIDs(ids []int64) (int64, error) {
 	result := d.db.Where("id IN ?", ids).Delete(&model.IP{})
 	return result.RowsAffected, result.Error
+}
+
+// Find 查询
+func (d *ipDao) Find(page, pageSize int) ([]*model.IP, int64, error) {
+	data := make([]*model.IP, 0)
+	var count int64
+
+	result := d.db.Model(&model.IP{}).Count(&count)
+	if result.Error != nil || count == 0 {
+		return data, 0, result.Error
+	}
+
+	result = d.db.Offset((page - 1) * pageSize).Limit(pageSize).Find(&data)
+	return data, count, result.Error
 }
 
 func (d *ipDao) clone(db *gorm.DB) *ipDao {

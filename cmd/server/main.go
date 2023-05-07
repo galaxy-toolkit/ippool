@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
-
-	"github.com/galaxy-toolkit/ippool/app/pool"
 	"github.com/galaxy-toolkit/ippool/internal/global"
+	"github.com/galaxy-toolkit/ippool/router"
 )
 
 func main() {
@@ -12,7 +10,7 @@ func main() {
 	global.InitLogger()              // 日志
 	global.InitPostgres()            // Postgres
 
-	pool.CrawlAll(context.TODO())
+	router.Run()
 
 	global.Logger.Info("end")
 }

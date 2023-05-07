@@ -14,6 +14,7 @@ func Run() {
 	)
 
 	WithSwagger(app, global.Config.Server)
+	WithPool(app)
 
 	if err := app.Listen(global.Config.Server.Host + ":" + global.Config.Server.Port); err != nil {
 		panic(err)
