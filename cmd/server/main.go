@@ -9,6 +9,7 @@ func main() {
 	global.InitConfig("config.yaml") // 配置
 	global.InitLogger()              // 日志
 	global.InitPostgres()            // Postgres
+	global.InitRedis()               // Redis
 
 	router.Run()
 
