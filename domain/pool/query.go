@@ -27,7 +27,7 @@ func Use(ctx context.Context) *Query {
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		DB: db,
-		IP: q.IP.clone(db),
+		IP: q.IP.Clone(db),
 	}
 }
 

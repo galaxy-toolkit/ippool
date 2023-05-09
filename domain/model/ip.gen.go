@@ -22,6 +22,6 @@ type IP struct {
 }
 
 // TableName IP's table name
-func (*IP) TableName() string {
+func (IP) TableName() string {
 	return TableNameIP
 }
