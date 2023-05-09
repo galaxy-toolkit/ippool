@@ -9,8 +9,9 @@ import (
 )
 
 type Query struct {
-	DB *gorm.DB
-	IP IPDao
+	DB  *gorm.DB
+	IP  IPDao
+	Ctx context.Context
 }
 
 func Use(ctx context.Context) *Query {
@@ -19,15 +20,17 @@ func Use(ctx context.Context) *Query {
 	})
 
 	return &Query{
-		DB: db,
-		IP: NewIPDao(ctx, db),
+		Ctx: ctx,
+		DB:  db,
+		IP:  NewIPDao(ctx, db),
 	}
 }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		DB: db,
-		IP: q.IP.Clone(db),
+		Ctx: q.Ctx,
+		DB:  db,
+		IP:  NewIPDao(q.Ctx, db),
 	}
 }
 

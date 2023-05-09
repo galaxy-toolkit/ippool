@@ -10,5 +10,6 @@ func WithPool(app *fiber.App) {
 	ipRouter := app.Group("/ip")
 	{
 		ipRouter.Get("", pool.IPList)
+		ipRouter.Get("/random", pool.IPRandom)
 	}
 }

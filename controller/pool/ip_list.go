@@ -26,7 +26,6 @@ type IPListResponse server.DataResponse[server.PageResponse[[]*model.IP]]
 //	@Produce		json
 //	@Param			q	body		IPListRequest	true	"请求参数"
 //	@Success		200	{object}	IPListResponse
-//	@Failure		200	{object}	server.ParamsParseFailedResponse
 //	@Router			/ip [get]
 func IPList(ctx *fiber.Ctx) error {
 	var req IPListRequest
