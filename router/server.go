@@ -3,6 +3,8 @@ package router
 import (
 	"github.com/galaxy-toolkit/ippool/internal/global"
 	"github.com/galaxy-toolkit/server/server"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
 // Run 启动服务
@@ -15,11 +17,12 @@ import (
 func Run() {
 	app := server.NewRouter()
 	app.Use(
-		server.NewLimiterHandler(global.Config.Server),
-		server.NewLoggerHandler(global.Config.Server, global.LoggerWriter),
+		recover.New(recover.Config{EnableStackTrace: true}), // Panic recover
+		requestid.New(), // RequestID
+		server.NewLoggerHandler(global.Config.Server, global.LoggerWriter), // 日志
+		server.NewLimiterHandler(global.Config.Server),                     // 限流器
 	)
 
-	WithSwagger(app, global.Config.Server)
 	WithPool(app)
 
 	if err := app.Listen(global.Config.Server.Host + ":" + global.Config.Server.Port); err != nil {
