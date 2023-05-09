@@ -1,6 +1,7 @@
 package pool
 
 import (
+	"github.com/galaxy-toolkit/ippool/domain/model"
 	"github.com/galaxy-toolkit/ippool/domain/pool"
 	"github.com/galaxy-toolkit/server/server"
 	"github.com/galaxy-toolkit/server/server/code"
@@ -13,14 +14,19 @@ type IPListRequest struct {
 	PageSize int `json:"page_size"`
 }
 
+// IPListResponse 响应
+type IPListResponse server.DataResponse[server.PageResponse[[]*model.IP]]
+
 // IPList 获取 IP 列表
-// @Summary 获取 IP 列表
-// @Description 获取 IP 列表
-// @Tags IP
-// @Accept json
-// @Produce json
-// @Success 200 {object} server.DataResponse[server.PageResponse[[]*model.IP]]
-// @Router /ip [get]
+//
+//	@Summary		获取 IP 列表
+//	@Description	获取 IP 列表
+//	@Tags			IP
+//	@Accept			json
+//	@Produce		json
+//	@Param			q	body		IPListRequest	true	"请求参数"
+//	@Success		200	{object}	IPListResponse
+//	@Router			/ip [get]
 func IPList(ctx *fiber.Ctx) error {
 	var req IPListRequest
 	if err := ctx.BodyParser(&req); err != nil {

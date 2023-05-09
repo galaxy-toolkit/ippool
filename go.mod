@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
-	github.com/galaxy-toolkit/server v0.0.0-20230423064250-27c2f82a9d66
+	github.com/galaxy-toolkit/server v0.0.0-20230509054344-f0d24df764aa
 	github.com/gofiber/fiber/v2 v2.44.0
 	github.com/gofiber/swagger v0.1.11
 	github.com/sourcegraph/conc v0.3.0

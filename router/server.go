@@ -6,6 +6,12 @@ import (
 )
 
 // Run 启动服务
+//
+//	@title			ippool
+//	@version		1.0
+//	@description	ippool
+//	@host			localhost:9999
+//	@BasePath		/
 func Run() {
 	app := server.NewRouter()
 	app.Use(
