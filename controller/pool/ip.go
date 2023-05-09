@@ -10,8 +10,8 @@ import (
 
 // IPListRequest 请求参数
 type IPListRequest struct {
-	Page     int `json:"page"`
-	PageSize int `json:"page_size"`
+	Page     int `json:"page" validate:"required,max=1000"`
+	PageSize int `json:"page_size" validate:"required,max=20"`
 }
 
 // IPListResponse 响应
@@ -26,11 +26,16 @@ type IPListResponse server.DataResponse[server.PageResponse[[]*model.IP]]
 //	@Produce		json
 //	@Param			q	body		IPListRequest	true	"请求参数"
 //	@Success		200	{object}	IPListResponse
+//	@Failure		200	{object}	server.ParamsParseFailedResponse
 //	@Router			/ip [get]
 func IPList(ctx *fiber.Ctx) error {
 	var req IPListRequest
 	if err := ctx.BodyParser(&req); err != nil {
 		return server.SendCode(ctx, code.ParamsParseFailed)
+	}
+
+	if err := server.Validate[IPListRequest](req); err != nil {
+		return server.SendParamsParseFailed(ctx, err)
 	}
 
 	ips, total, err := pool.Use(ctx.Context()).IP.Find(req.Page, req.PageSize)
