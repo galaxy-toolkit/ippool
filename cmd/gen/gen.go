@@ -15,7 +15,6 @@ func main() {
 
 func genIP() {
 	generator, err := global.InitPostgresGenerator(postgres.GeneratorConfig{
-		QueryPath: "domain/ip",
 		ModelPath: "domain/model",
 	})
 	if err != nil {
@@ -26,5 +25,6 @@ func genIP() {
 		gen.FieldType("status", "IPStatus"),
 		gen.FieldType("protocol", "IPProtocol"),
 	)
+	generator.GenerateModelAs("user", "User")
 	generator.Execute()
 }
