@@ -10,6 +10,7 @@ func main() {
 	global.InitLogger()              // 日志
 	global.InitPostgres()            // Postgres
 	global.InitRedis()               // Redis
+	global.InitSessionStore()        // Session Store
 
 	router.Run()
 

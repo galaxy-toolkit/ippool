@@ -23,7 +23,8 @@ func Run() {
 		server.NewLimiterHandler(global.Config.Server),                     // 限流器
 	)
 
-	WithPool(app)
+	WithPool(app) // IP 池
+	WithUser(app) // 用户
 
 	if err := app.Listen(global.Config.Server.Host + ":" + global.Config.Server.Port); err != nil {
 		panic(err)
