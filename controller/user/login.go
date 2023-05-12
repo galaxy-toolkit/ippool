@@ -1,8 +1,8 @@
 package user
 
 import (
+	"github.com/galaxy-toolkit/ippool/app/user"
 	"github.com/galaxy-toolkit/ippool/domain/model"
-	"github.com/galaxy-toolkit/ippool/domain/user"
 	"github.com/galaxy-toolkit/ippool/internal/global"
 	"github.com/galaxy-toolkit/server/server"
 	"github.com/galaxy-toolkit/server/server/code"
@@ -38,27 +38,32 @@ func Login(ctx *fiber.Ctx) error {
 		return server.SendParamsParseFailed(ctx, err)
 	}
 
-	u, err := user.Use(ctx.Context()).User.FindOne(&user.FindOneOption{Name: req.Username})
+	u, err := user.NewService(ctx.Context()).Login(&user.LoginParams{
+		Username: req.Username,
+		Password: req.Password,
+		Phone:    "",
+	})
 	if err != nil {
-		return server.SendCode(ctx, code.UserNotFound)
-	}
-	if u == nil {
-		return server.SendCode(ctx, code.UserNotFound)
+		return server.SendError(ctx, err)
 	}
 
-	if req.Password != u.Password {
-		return server.SendCode(ctx, code.PasswordError)
-	}
-
-	sess, err := global.Session.Get(ctx)
-	if err != nil {
-		return server.SendFailed(ctx)
-	}
-
-	sess.Set("username", u.Username)
-	if err := sess.Save(); err != nil {
-		return server.SendFailed(ctx)
+	if err := SetSession(ctx, u); err != nil {
+		return server.SendError(ctx, err)
 	}
 
 	return server.SendDataOk(ctx, u)
+}
+
+func SetSession(ctx *fiber.Ctx, u *model.User) error {
+	sess, err := global.Session.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	sess.Set("username", u.Username)
+
+	if err := sess.Save(); err != nil {
+		return err
+	}
+	return nil
 }
