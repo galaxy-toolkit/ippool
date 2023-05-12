@@ -10,5 +10,6 @@ func WithUser(router *fiber.App) {
 	{
 		userGroup.Post("/register", user.Register)
 		userGroup.Post("/login", user.Login)
+		userGroup.Get("/:id", user.GetUserInfo)
 	}
 }
