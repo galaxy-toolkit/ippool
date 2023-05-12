@@ -22,7 +22,7 @@ type User struct {
 	Status    string         `gorm:"column:status;type:character varying;not null;comment:状态" json:"status"`                     // 状态
 	CreatedAt time.Time      `gorm:"column:created_at;type:timestamp without time zone;not null;comment:创建时间" json:"created_at"` // 创建时间
 	UpdatedAt time.Time      `gorm:"column:updated_at;type:timestamp without time zone;not null;comment:更新事件" json:"updated_at"` // 更新事件
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp without time zone;not null;comment:删除事件" json:"deleted_at"` // 删除事件
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp without time zone;comment:删除事件" json:"deleted_at"`          // 删除事件
 	Nickname  string         `gorm:"column:nickname;type:character varying;not null;comment:昵称，用于展示" json:"nickname"`            // 昵称，用于展示
 }
 
