@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/galaxy-toolkit/ippool/internal/global"
+	"github.com/galaxy-toolkit/server/log"
 	"github.com/galaxy-toolkit/server/server"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
@@ -19,8 +20,8 @@ func Run() {
 	app.Use(
 		recover.New(recover.Config{EnableStackTrace: true}), // Panic recover
 		requestid.New(), // RequestID
-		server.NewLoggerHandler(global.Config.Server, global.LoggerWriter), // 日志
-		server.NewLimiterHandler(global.Config.Server),                     // 限流器
+		server.NewLoggerHandler(global.Config.Server, log.LoggerWriter), // 日志
+		server.NewLimiterHandler(global.Config.Server),                  // 限流器
 	)
 
 	WithPool(app) // IP 池

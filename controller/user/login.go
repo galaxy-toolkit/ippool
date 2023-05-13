@@ -4,6 +4,7 @@ import (
 	"github.com/galaxy-toolkit/ippool/app/user"
 	"github.com/galaxy-toolkit/ippool/domain/model"
 	"github.com/galaxy-toolkit/ippool/internal/global"
+	"github.com/galaxy-toolkit/server/log"
 	"github.com/galaxy-toolkit/server/server"
 	"github.com/galaxy-toolkit/server/server/code"
 	"github.com/gofiber/fiber/v2"
@@ -31,10 +32,12 @@ type LoginResponse server.DataResponse[*model.User]
 func Login(ctx *fiber.Ctx) error {
 	var req LoginRequestParams
 	if err := ctx.BodyParser(&req); err != nil {
+		log.Error(ctx.Context(), "登录参数解析失败", "err", err)
 		return server.SendCode(ctx, code.ParamsParseFailed)
 	}
 
 	if err := server.Validate[LoginRequestParams](req); err != nil {
+		log.Error(ctx.Context(), "登录参数验证失败", "err", err)
 		return server.SendParamsParseFailed(ctx, err)
 	}
 
@@ -44,10 +47,12 @@ func Login(ctx *fiber.Ctx) error {
 		Phone:    "",
 	})
 	if err != nil {
+		log.Error(ctx.Context(), "登陆失败", "err", err)
 		return server.SendError(ctx, err)
 	}
 
 	if err := SetSession(ctx, u); err != nil {
+		log.Error(ctx.Context(), "生成 session 失败", "err", err)
 		return server.SendError(ctx, err)
 	}
 
