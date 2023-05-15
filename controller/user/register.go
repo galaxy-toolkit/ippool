@@ -2,9 +2,11 @@ package user
 
 import (
 	"github.com/galaxy-toolkit/ippool/app/user"
+	"github.com/galaxy-toolkit/server/log"
 	"github.com/galaxy-toolkit/server/server"
 	"github.com/galaxy-toolkit/server/server/code"
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/exp/slog"
 )
 
 // RegisterRequestParams 注册请求参数
@@ -26,10 +28,12 @@ type RegisterRequestParams struct {
 func Register(ctx *fiber.Ctx) error {
 	var req RegisterRequestParams
 	if err := ctx.BodyParser(&req); err != nil {
+		log.Server.Error(ctx.Context(), "参数解析失败", slog.Any("err", err))
 		return server.SendCode(ctx, code.ParamsParseFailed)
 	}
 
 	if err := server.Validate[RegisterRequestParams](req); err != nil {
+		log.Server.Error(ctx.Context(), "参数验证失败", slog.Any("err", err))
 		return server.SendParamsParseFailed(ctx, err)
 	}
 
@@ -38,6 +42,7 @@ func Register(ctx *fiber.Ctx) error {
 		Password: req.Password,
 	})
 	if err != nil {
+		log.Server.Error(ctx.Context(), "注册失败", slog.Any("err", err))
 		return server.SendError(ctx, err)
 	}
 
