@@ -5,11 +5,12 @@ import (
 
 	"github.com/galaxy-toolkit/ippool/domain/model"
 	"github.com/galaxy-toolkit/ippool/domain/pool"
-	"github.com/galaxy-toolkit/ippool/internal/global"
 	"github.com/galaxy-toolkit/ippool/request/crawl"
+	"github.com/galaxy-toolkit/server/log"
 	"github.com/jackc/pgconn"
 	"github.com/sourcegraph/conc"
 	concPool "github.com/sourcegraph/conc/pool"
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -41,7 +42,7 @@ func crawlAll(ctx context.Context, resultsChan chan<- *model.IP) {
 		p.Go(func() {
 			err := crawlers[i].CrawlAll(resultsChan)
 			if err != nil {
-				global.Logger.ErrorCtx(ctx, "kuaidaili CrawlAll crawlByPage err", "err", err)
+				log.Basic.Error(ctx, "kuaidaili CrawlAll crawlByPage err", slog.Any("err", err))
 				return
 			}
 		})
@@ -76,7 +77,7 @@ func runTimedCrawlers(ctx context.Context, resultsChan chan<- *model.IP) {
 		p.Go(func() {
 			err := crawlers[i].TimedCrawl(resultsChan)
 			if err != nil {
-				global.Logger.ErrorCtx(ctx, "kuaidaili TimedCrawl crawlByPage err", "err", err)
+				log.Basic.Error(ctx, "kuaidaili TimedCrawl crawlByPage err", slog.Any("err", err))
 				return
 			}
 		})
@@ -93,12 +94,12 @@ func collectResults(ctx context.Context, resultsChan <-chan *model.IP) {
 		if err != nil {
 			if e, ok := err.(*pgconn.PgError); ok { // 当错误类型为唯一键冲突时，仅记录 warning 日志
 				if e.Code == "23505" {
-					global.Logger.WarnCtx(ctx, "CollectResults InsertOne duplicated", "err", err)
+					log.Basic.Warn(ctx, "CollectResults InsertOne duplicated", slog.Any("err", err))
 					continue
 				}
 			}
 
-			global.Logger.ErrorCtx(ctx, "CollectResults InsertOne err", "err", err)
+			log.Basic.Error(ctx, "CollectResults InsertOne err", slog.Any("err", err))
 		}
 	}
 }

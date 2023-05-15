@@ -3,12 +3,13 @@ package main
 import (
 	"github.com/galaxy-toolkit/ippool/internal/global"
 	"github.com/galaxy-toolkit/server/database/postgres"
+	"github.com/galaxy-toolkit/server/log"
 	"gorm.io/gen"
 )
 
 func main() {
-	global.InitConfig("config.yaml") // 配置
-	global.InitLogger()              // 日志
+	global.InitConfig("config.yaml")  // 配置
+	log.InitLogger(global.Config.Log) // 日志
 
 	genIP()
 }

@@ -7,7 +7,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/galaxy-toolkit/ippool/domain/model"
-	"github.com/galaxy-toolkit/ippool/internal/global"
+	"github.com/galaxy-toolkit/server/log"
 	"github.com/wnanbei/fastreq"
 	"golang.org/x/exp/slog"
 )
@@ -44,13 +44,13 @@ func (c *Crawler) TimedCrawl(resultChan chan<- *model.IP) error {
 	for i := 1; i <= c.timedCrawlPage; i++ {
 		ips, err := c.crawlByPage(i)
 		if err != nil {
-			global.Logger.ErrorCtx(c.ctx, "kuaidaili Crawl crawlByPage err", "err", err, slog.Any("page", i))
+			log.Basic.Error(c.ctx, "kuaidaili Crawl crawlByPage err", slog.Any("err", err), slog.Any("page", i))
 			return err
 		}
 
 		for j := range ips {
 			resultChan <- ips[j]
-			global.Logger.InfoCtx(c.ctx, "kuaidaili Crawl successes", slog.Any("ip", ips[j]))
+			log.Basic.Info(c.ctx, "kuaidaili Crawl successes", slog.Any("ip", ips[j]))
 		}
 
 		time.Sleep(c.crawlIntervalTime)
@@ -63,13 +63,13 @@ func (c *Crawler) CrawlAll(resultChan chan<- *model.IP) error {
 	for i := 1; i <= c.maxCrawlPage; i++ {
 		ips, err := c.crawlByPage(i * 10)
 		if err != nil {
-			global.Logger.ErrorCtx(c.ctx, "kuaidaili CrawlAll crawlByPage err", "err", err, slog.Any("page", i))
+			log.Basic.Error(c.ctx, "kuaidaili CrawlAll crawlByPage err", slog.Any("err", err), slog.Any("page", i))
 			return err
 		}
 
 		for j := range ips {
 			resultChan <- ips[j]
-			global.Logger.InfoCtx(c.ctx, "kuaidaili CrawlAll successes", slog.Any("ip", ips[j]))
+			log.Basic.Info(c.ctx, "kuaidaili CrawlAll successes", slog.Any("ip", ips[j]))
 		}
 
 		time.Sleep(c.crawlIntervalTime)
@@ -105,6 +105,6 @@ func (c *Crawler) crawlByPage(page int) ([]*model.IP, error) {
 		ips = append(ips, ip)
 	})
 
-	global.Logger.InfoCtx(c.ctx, "kuaidaili crawlByPage successes", slog.Any("url", uri))
+	log.Basic.Info(c.ctx, "kuaidaili crawlByPage successes", slog.Any("url", uri))
 	return ips, nil
 }
